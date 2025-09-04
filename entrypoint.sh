@@ -46,8 +46,19 @@ status=$(echo "$response" | tail -n1)
 echo "Response: $body"
 
 if [ "$status" -ne 200 ]; then
-  echo "❌ Latent tests failed with status $status"
+  echo "❌ Latent API request failed with status $status"
   exit 1
 fi
 
-echo "✅ Latent tests completed successfully"
+# Parse results if present
+passed=$(echo "$body" | jq -r '.passed // empty')
+failed=$(echo "$body" | jq -r '.failed // empty')
+
+if [ -n "$passed" ] || [ -n "$failed" ]; then
+  echo "✅ Passed: $passed"
+  echo "❌ Failed: $failed"
+else
+  echo "ℹ️ Test results not included in response body."
+fi
+
+echo "🎉 Latent tests completed (workflow will not fail even if tests failed)."
