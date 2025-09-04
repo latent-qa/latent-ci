@@ -5,8 +5,11 @@ inputs:
     description: "Your Latent API key"
     required: true
   project-id:
-    description: "Your Latent project ID"
+    description: "Latent project ID"
     required: true
+  website-url:
+    description: "Optional URL to test against (e.g., staging or preview site)"
+    required: false
 runs:
   using: "docker"
   image: "Dockerfile"
