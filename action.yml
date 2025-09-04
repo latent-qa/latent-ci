@@ -1,0 +1,12 @@
+name: "Latent CI"
+description: "Run AI-powered tests with Latent"
+inputs:
+  api-key:
+    description: "Your Latent API key"
+    required: true
+  project-id:
+    description: "Your Latent project ID"
+    required: true
+runs:
+  using: "docker"
+  image: "Dockerfile"
