@@ -3,11 +3,15 @@ set -e
 
 echo "🚀 Running Latent Tests..."
 
-API_KEY="$1"
-PROJECT_ID="$2"
-WEBSITE_URL="$3"
+API_KEY="${INPUT_API_KEY}"
+PROJECT_ID="${INPUT_PROJECT_ID}"
+WEBSITE_URL="${INPUT_WEBSITE_URL}"
 
-# Collect GitHub context
+if [ -z "$API_KEY" ] || [ -z "$PROJECT_ID" ]; then
+  echo "❌ Missing required inputs (api-key, project-id)"
+  exit 1
+fi
+
 REPO="${GITHUB_REPOSITORY}"
 BRANCH="${GITHUB_REF_NAME}"
 COMMIT="${GITHUB_SHA}"
@@ -18,7 +22,6 @@ echo "   Branch: $BRANCH"
 echo "   Commit: $COMMIT"
 [ -n "$WEBSITE_URL" ] && echo "   Website: $WEBSITE_URL"
 
-# Build JSON payload
 payload=$(jq -n \
   --arg repo "$REPO" \
   --arg commit "$COMMIT" \
@@ -33,7 +36,6 @@ payload=$(jq -n \
     websiteUrl: ($websiteUrl | select(. != ""))
   }')
 
-# Call Latent API
 response=$(curl -s -w "\n%{http_code}" -X POST \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
@@ -50,7 +52,6 @@ if [ "$status" -ne 200 ]; then
   exit 1
 fi
 
-# Parse results if present
 passed=$(echo "$body" | jq -r '.passed // empty')
 failed=$(echo "$body" | jq -r '.failed // empty')
 
@@ -61,4 +62,4 @@ else
   echo "ℹ️ Test results not included in response body."
 fi
 
-echo "🎉 Latent tests completed (workflow will not fail even if tests failed)."
+echo "🎉 Latent tests completed. (Note: workflow succeeded even if some tests failed.)"
