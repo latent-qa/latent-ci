@@ -20,8 +20,6 @@ Run AI-powered tests with Latent
 
 3. ## Create Workflow
    ```bash
-   Name: LATENT_API_KEY
-   Value: your Latent API key
    Add a new workflow file in your repo:
    .github/workflows/latent-tests.yml
 
