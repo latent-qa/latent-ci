@@ -40,7 +40,7 @@ response=$(curl -s -w "\n%{http_code}" -X POST \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d "$payload" \
-  https://api.latentqa.com/run-ci-tests)
+  https://api.latentqa.com/run-tests/run-ci-tests)
 
 body=$(echo "$response" | head -n1)
 status=$(echo "$response" | tail -n1)
