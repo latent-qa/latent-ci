@@ -42,24 +42,48 @@ response=$(curl -s -w "\n%{http_code}" -X POST \
   -d "$payload" \
   https://api.latentqa.com/run-tests/run-ci-tests)
 
-body=$(echo "$response" | head -n1)
-status=$(echo "$response" | tail -n1)
+body=$(echo "$response" | head -n -1)
+status=$(echo "$response" | tail -n 1)
 
-echo "Response: $body"
+echo "Response Status: $status"
+echo "Response Body: $body"
 
 if [ "$status" -ne 200 ]; then
   echo "❌ Latent API request failed with status $status"
+  echo "Error details: $body"
   exit 1
 fi
 
-passed=$(echo "$body" | jq -r '.passed // empty')
-failed=$(echo "$body" | jq -r '.failed // empty')
+passed=$(echo "$body" | jq -r '.passed // 0')
+failed=$(echo "$body" | jq -r '.failed // 0')
+total=$(echo "$body" | jq -r '.total // 0')
+execution_time=$(echo "$body" | jq -r '.execution_time // 0')
 
-if [ -n "$passed" ] || [ -n "$failed" ]; then
-  echo "✅ Passed: $passed"
-  echo "❌ Failed: $failed"
-else
-  echo "ℹ️ Test results not included in response body."
+echo "passed=$passed" >> $GITHUB_OUTPUT
+echo "failed=$failed" >> $GITHUB_OUTPUT
+echo "total=$total" >> $GITHUB_OUTPUT
+echo "execution-time=$execution_time" >> $GITHUB_OUTPUT
+
+echo ""
+echo "📊 Test Results:"
+echo "   ✅ Passed: $passed"
+echo "   ❌ Failed: $failed"
+echo "   📈 Total: $total"
+echo "   ⏱️  Execution Time: ${execution_time}s"
+
+details=$(echo "$body" | jq -r '.details // empty')
+if [ -n "$details" ] && [ "$details" != "null" ]; then
+  echo ""
+  echo "📋 Detailed Results:"
+  echo "$body" | jq -r '.details[] | "   \(.status | ascii_upcase): \(.test_name) (\(.execution_time)s)"'
 fi
 
-echo "🎉 Latent tests completed. (Note: workflow succeeded even if some tests failed.)"
+if [ "$failed" -gt 0 ]; then
+  echo ""
+  echo "⚠️  Some tests failed, but workflow will continue (non-blocking)"
+  # Uncomment the next line if you want failed tests to fail the workflow
+  # exit 1
+fi
+
+echo ""
+echo "🎉 Latent CI completed successfully!"
