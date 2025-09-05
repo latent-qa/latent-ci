@@ -1,5 +1,8 @@
 name: "Latent CI"
 description: "Run AI-powered tests with Latent"
+branding:
+  icon: "check-circle"
+  color: "green"
 inputs:
   api-key:
     description: "Your Latent API key"
@@ -10,6 +13,15 @@ inputs:
   website-url:
     description: "Optional URL to test against (e.g., staging or preview site)"
     required: false
+outputs:
+  passed:
+    description: "Number of tests that passed"
+  failed:
+    description: "Number of tests that failed"
+  total:
+    description: "Total number of tests run"
+  execution-time:
+    description: "Total execution time in seconds"
 runs:
   using: "docker"
   image: "Dockerfile"
