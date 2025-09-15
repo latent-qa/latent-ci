@@ -21,22 +21,49 @@ Run AI-powered tests with Latent
 3. ## Create Workflow
    ```bash
    Add a new workflow file in your repo:
-   .github/workflows/latent-tests.yml
+   .github/workflows/latent-ci.yml
 
-   name: Latent Tests
+   name: Run Tests
 
-   on: [push, pull_request]
+   on:
+     push:
+       branches: [ main, develop ]
+     pull_request:
+       branches: [ main ]
+     workflow_dispatch:
+   
    jobs:
-   run-latent:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Latent Tests
-        uses: latent/github-action@v1
-        with:
-          api-key: ${{ secrets.LATENT_API_KEY }}
-          project-id: my-project-id
-          website-url: my-website-url (optional)
+     test:
+       runs-on: ubuntu-latest
+       
+       steps:
+         - name: Checkout code
+           uses: actions/checkout@v4
+           
+         - name: Run Latent Tests
+           id: latent
+           uses: latent-qa/latent-ci@v1.0
+           with:
+             api_key: ${{ secrets.LATENT_API_KEY }}
+             project_id: ${{ secrets.LATENT_PROJECT_ID }}
+             website_url: ${{ secrets.STAGING_URL }}  # Optional
+             
+         - name: Display test results
+           run: |
+             echo "Tests passed: ${{ steps.latent.outputs.passed }}"
+             echo "Tests failed: ${{ steps.latent.outputs.failed }}"
+             echo "Total tests: ${{ steps.latent.outputs.total }}"
+             echo "Execution time: ${{ steps.latent.outputs.execution_time }}s"
+             
+         # Optional: Create a GitHub status check
+         - name: Update status check
+           if: always()
+           run: |
+             if [ "${{ steps.latent.outputs.failed }}" -eq "0" ]; then
+               echo "All tests passed! ✅"
+             else
+               echo "${{ steps.latent.outputs.failed }} tests failed ❌"
+             fi
    ```
 
 
