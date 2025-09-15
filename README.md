@@ -19,10 +19,10 @@ Run AI-powered tests with Latent
    ```
 
 3. ## Create Workflow
-   ```bash
    Add a new workflow file in your repo:
    .github/workflows/latent-ci.yml
-
+   
+   ```bash
    name: Run Tests
 
    on:
