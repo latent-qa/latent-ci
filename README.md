@@ -12,10 +12,11 @@ Run AI-powered tests with Latent
    ```
 
 
-2. ## Generate API Key from Latent
+2. ## Generate Project ID & API Key from Latent's Integration Page. Add them like this:
    ```bash
-   Name: LATENT_API_KEY
-   Value: your Latent API key
+   LATENT_API_KEY: YOUR_LATENT_API_KEY
+   LATENT_PROJECT_ID: YOUR_LINKED_PROJECT
+   STAGING_URL: https://www.yourstagingurl.com (Optional, only if you have a staging enviroment. Otherwise tests will run on the URL set on Latent.)
    ```
 
 3. ## Create Workflow
