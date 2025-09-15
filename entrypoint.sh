@@ -7,6 +7,10 @@ API_KEY="${INPUT_API_KEY}"
 PROJECT_ID="${INPUT_PROJECT_ID}"
 WEBSITE_URL="${INPUT_WEBSITE_URL}"
 
+echo "DEBUG API_KEY=${API_KEY:0:4}***"
+echo "DEBUG PROJECT_ID=${PROJECT_ID:0:4}***"
+echo "DEBUG WEBSITE_URL=${WEBSITE_URL}"
+
 if [ -z "$API_KEY" ] || [ -z "$PROJECT_ID" ]; then
   echo "❌ Missing required inputs (api-key, project-id)"
   exit 1
