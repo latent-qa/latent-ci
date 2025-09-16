@@ -36,9 +36,9 @@ payload=$(jq -n \
     repo: $repo,
     commit: $commit,
     branch: $branch,
-    projectId: $projectId,
-    websiteUrl: ($websiteUrl | select(. != ""))
-  }')
+    projectId: $projectId
+  }
+  + (if $websiteUrl != "" then {websiteUrl: $websiteUrl} else {} end)')
 
 response=$(curl -s -w "\n%{http_code}" -X POST \
   -H "Authorization: Bearer $API_KEY" \
